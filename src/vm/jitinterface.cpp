@@ -12599,7 +12599,11 @@ CorJitResult CallCompileMethodWithSEHWrapper(EEJitManager *jitMgr,
     if (g_pConfig->JitAlignLoops())
         flags.Set(CORJIT_FLAGS::CORJIT_FLAG_ALIGN_LOOPS);
     if (ftn->IsVersionableWithJumpStamp() || g_pConfig->AddRejitNops())
+    {
+        // Common code path for both the JIT and NGEM
+        // Mark this method as requiring a NOP to support the jumpstamp variant of re-jittable code
         flags.Set(CORJIT_FLAGS::CORJIT_FLAG_PROF_REJIT_NOPS);
+    }
 #ifdef _TARGET_X86_
     if (g_pConfig->PInvokeRestoreEsp(ftn->GetModule()->IsPreV4Assembly()))
         flags.Set(CORJIT_FLAGS::CORJIT_FLAG_PINVOKE_RESTORE_ESP);

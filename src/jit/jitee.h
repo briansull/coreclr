@@ -64,7 +64,7 @@ public:
         JIT_FLAG_MAKEFINALCODE           = 18, // Use the final code generator, i.e., not the interpreter.
         JIT_FLAG_READYTORUN              = 19, // Use version-resilient code generation
         JIT_FLAG_PROF_ENTERLEAVE         = 20, // Instrument prologues/epilogues
-        JIT_FLAG_PROF_REJIT_NOPS         = 21, // Insert NOPs to ensure code is re-jitable
+        JIT_FLAG_PROF_REJIT_NOPS         = 21, // Insert NOPs for the jumpstamp variant of re-jitable code
         JIT_FLAG_PROF_NO_PINVOKE_INLINE  = 22, // Disables PInvoke inlining
         JIT_FLAG_SKIP_VERIFICATION       = 23, // (lazy) skip verification - determined without doing a full resolve. See comment below
         JIT_FLAG_PREJIT                  = 24, // jit or prejit is the execution engine.

@@ -7154,7 +7154,7 @@ ret
 
 /*****************************************************************************
  *
- *  Generates appropriate NOP padding for a function prolog to support ReJIT.
+ *  Generates appropriate NOP padding for a function prolog to support jumpstamp ReJIT.
  */
 
 void CodeGen::genPrologPadForReJit()
@@ -7162,6 +7162,7 @@ void CodeGen::genPrologPadForReJit()
     assert(compiler->compGeneratingProlog);
 
 #ifdef _TARGET_XARCH_
+    // Check if the JIT needs to insert a variable sized NOP for the jumpstanp 
     if (!compiler->opts.jitFlags->IsSet(JitFlags::JIT_FLAG_PROF_REJIT_NOPS))
     {
         return;
