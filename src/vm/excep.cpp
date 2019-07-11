@@ -6653,7 +6653,7 @@ IsDebuggerFault(EXCEPTION_RECORD *pExceptionRecord,
 
 #ifdef DEBUGGING_SUPPORTED
 
-#ifdef _TARGET_ARM_
+#ifdef FEATURE_EMULATE_SINGLESTEP
     // On ARM we don't have any reliable hardware support for single stepping so it is emulated in software.
     // The implementation will end up throwing an EXCEPTION_BREAKPOINT rather than an EXCEPTION_SINGLE_STEP
     // and leaves other aspects of the thread context in an invalid state. Therefore we use this opportunity
@@ -6671,7 +6671,7 @@ IsDebuggerFault(EXCEPTION_RECORD *pExceptionRecord,
         pExceptionRecord->ExceptionCode = EXCEPTION_SINGLE_STEP;
         pExceptionRecord->ExceptionAddress = (PVOID)pContext->Pc;
     }
-#endif // _TARGET_ARM_
+#endif // FEATURE_EMULATE_SINGLESTEP
 
     // Is this exception really meant for the COM+ Debugger? Note: we will let the debugger have a chance if there
     // is a debugger attached to any part of the process. It is incorrect to consider whether or not the debugger
@@ -6715,6 +6715,39 @@ EXTERN_C void JIT_WriteBarrier_Debug_End();
 #ifdef _TARGET_ARM_
 EXTERN_C void FCallMemcpy_End();
 #endif
+
+#ifdef VSD_STUB_CAN_THROW_AV
+//Return TRUE if pContext->Pc is in VirtualStub
+BOOL IsIPinVirtualStub(PCODE f_IP)
+{
+    LIMITED_METHOD_CONTRACT;
+
+    Thread * pThread = GetThread();
+
+    // We may not have a managed thread object. Example is an AV on the helper thread.
+    // (perhaps during StubManager::IsStub)
+    if (pThread == NULL)
+    {
+        return FALSE;
+    }
+
+    VirtualCallStubManager::StubKind sk;
+    VirtualCallStubManager::FindStubManager(f_IP, &sk, FALSE /* usePredictStubKind */);
+
+    if (sk == VirtualCallStubManager::SK_DISPATCH)
+    {
+        return TRUE;
+    }
+    else if (sk == VirtualCallStubManager::SK_RESOLVE)
+    {
+        return TRUE;
+    }
+
+    else {
+        return FALSE;
+    }
+}
+#endif // VSD_STUB_CAN_THROW_AV
 
 // Check if the passed in instruction pointer is in one of the
 // JIT helper functions.
